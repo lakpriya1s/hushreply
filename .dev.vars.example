@@ -1,0 +1,18 @@
+# Secrets. The Deploy to Cloudflare button asks for each of these; for local
+# `npm run dev`, copy this file to .dev.vars and fill it in. Never commit .dev.vars.
+
+# Meta app -> App settings -> Basic -> App secret.
+META_APP_SECRET=
+# Meta app -> Instagram -> API setup with Instagram login -> Instagram app secret.
+# A different value from META_APP_SECRET; Instagram webhooks are signed with it.
+IG_APP_SECRET=
+# Any random string you make up. Type the same one into Meta's webhook form.
+VERIFY_TOKEN=
+
+# Quick-start accounts: one Instagram account and/or one Facebook Page.
+# Leave a pair blank to skip that platform. For several accounts, use the
+# local dashboard's Accounts tab instead; these are ignored once it has saved any.
+IG_USER_ID=
+IG_ACCESS_TOKEN=
+FB_PAGE_ID=
+FB_PAGE_TOKEN=

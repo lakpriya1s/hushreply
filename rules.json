@@ -1,0 +1,47 @@
+{
+  "defaults": {
+    "match": "word",
+    "caseSensitive": false,
+    "platforms": [
+      "instagram",
+      "facebook"
+    ],
+    "cooldownHours": 24
+  },
+  "byAccount": {},
+  "shared": [
+    {
+      "id": "link",
+      "keyword": "LINK",
+      "dm": "Hey {{name}}! Here's the link you asked for 👇\n\nhttps://example.com\n\nAny questions, just reply here.",
+      "publicReply": [
+        "Just sent it to your DMs 📬",
+        "Check your DMs {{name}} 📬",
+        "Sent! Check your inbox 📬"
+      ]
+    },
+    {
+      "id": "price",
+      "keyword": "price",
+      "platforms": [
+        "facebook"
+      ],
+      "exclude": [
+        "spam"
+      ],
+      "dm": "Hi {{name}}, thanks for asking! Our full price list is here: https://example.com/pricing",
+      "publicReply": "Sent you the details in Messenger 💬",
+      "like": true
+    },
+    {
+      "id": "catch-all",
+      "match": "any",
+      "enabled": false,
+      "includeReplies": false,
+      "publicReply": [
+        "Thanks for the comment! 🙌",
+        "Appreciate you {{name}} 🙏"
+      ]
+    }
+  ]
+}

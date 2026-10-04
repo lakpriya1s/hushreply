@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HushReply dashboard</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f6f7f9; --card: #fff; --ink: #16181d; --dim: #6b7280;
+    --line: #dfe3e8; --accent: #2563eb; --ok: #047857; --bad: #b91c1c;
+    --warnbg: #fef3c7; --warnink: #7c2d12;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a; --card: #1c1f25; --ink: #e9eaee; --dim: #9ca3af;
+      --line: #30343c; --accent: #6ea8fe; --ok: #34d399; --bad: #f87171;
+      --warnbg: #422006; --warnink: #fcd34d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 1.5rem 1.25rem 6rem; background: var(--bg); color: var(--ink);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .page { max-width: 60rem; margin: 0 auto; }
+  header { display: flex; align-items: baseline; gap: .75rem; flex-wrap: wrap; margin-bottom: .25rem; }
+  h1 { font-size: 1.3rem; margin: 0; }
+  .sub { color: var(--dim); font-size: .88rem; margin: 0 0 1.5rem; }
+  .tabs { display: flex; gap: .3rem; border-bottom: 1px solid var(--line); margin: .9rem 0 1.2rem; }
+  .tabs button {
+    border: none; border-bottom: 2px solid transparent; background: none; border-radius: 0;
+    padding: .45rem .8rem; color: var(--dim); font-size: .92rem;
+  }
+  .tabs button:hover { color: var(--ink); border-color: var(--line); }
+  .tabs button[aria-selected=true] { color: var(--ink); border-color: var(--accent); font-weight: 600; }
+  .tabs.sections { margin: 0 0 1.1rem; flex-wrap: wrap; }
+  .tabs.sections button { font-size: .86rem; padding: .35rem .7rem; }
+  .tabs.sections .badge {
+    display: inline-block; margin-left: .35rem; padding: 0 .3rem; border-radius: 99px;
+    background: var(--bad); color: #fff; font-size: .7rem; font-weight: 600;
+  }
+  .tabs.sections .count { margin-left: .35rem; color: var(--dim); font-size: .78rem; }
+  .tabs.sections button.orphan { color: var(--warnink); }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 1rem 1.1rem; margin-bottom: .85rem;
+  }
+  .rule.disabled, .acct.disabled { opacity: .55; }
+  .rule.invalid, .acct.invalid { border-color: var(--bad); }
+  .rowtop { display: flex; align-items: center; gap: .6rem; margin-bottom: .8rem; }
+  .rowtop .idx {
+    font-variant-numeric: tabular-nums; color: var(--dim); font-size: .8rem;
+    min-width: 1.6rem;
+  }
+  .rowtop .grow { flex: 1; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: .7rem; }
+  label { display: block; font-size: .78rem; color: var(--dim); margin-bottom: .2rem; }
+  input[type=text], input[type=password], input[type=number], select, textarea {
+    width: 100%; padding: .42rem .55rem; border: 1px solid var(--line); border-radius: 6px;
+    background: var(--bg); color: var(--ink); font: inherit; font-size: .9rem;
+  }
+  textarea { min-height: 4.5rem; resize: vertical; font-family: ui-monospace, Menlo, monospace; font-size: .85rem; }
+  .mono { font-family: ui-monospace, Menlo, monospace; font-size: .84rem; }
+  .full { grid-column: 1 / -1; }
+  .checks { display: flex; gap: .9rem; align-items: center; flex-wrap: wrap; padding-top: 1.1rem; }
+  .checks label { display: inline-flex; align-items: center; gap: .32rem; margin: 0; font-size: .85rem; color: var(--ink); }
+  button {
+    font: inherit; font-size: .87rem; padding: .4rem .75rem; border-radius: 6px;
+    border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.icon { padding: .3rem .5rem; line-height: 1; }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  .bar {
+    position: fixed; bottom: 0; left: 0; right: 0; background: var(--card);
+    border-top: 1px solid var(--line); padding: .7rem 1.25rem;
+    display: flex; gap: .6rem; align-items: center; justify-content: center; flex-wrap: wrap;
+  }
+  .msg { font-size: .85rem; }
+  .msg.ok { color: var(--ok); } .msg.bad { color: var(--bad); }
+  .errs { background: var(--warnbg); color: var(--warnink); border-radius: 6px; padding: .5rem .7rem;
+          font-size: .84rem; margin-top: .6rem; }
+  .hint { color: var(--dim); font-size: .78rem; margin-top: .3rem; }
+  pre { background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: .7rem;
+        overflow: auto; font-size: .82rem; max-height: 22rem; margin: .6rem 0 0; }
+  .testrow { display: flex; gap: .5rem; flex-wrap: wrap; align-items: flex-end; }
+  .testrow > div { flex: 1 1 12rem; }
+  .verdict { margin-top: .7rem; font-size: .88rem; }
+  .tag { display: inline-block; background: var(--bg); border: 1px solid var(--line);
+         border-radius: 4px; padding: .05rem .35rem; font-size: .78rem; margin-right: .25rem; }
+  .pill { font-size: .74rem; padding: .05rem .4rem; border-radius: 99px; border: 1px solid var(--line); color: var(--dim); }
+  .pill.on { color: var(--ok); border-color: var(--ok); }
+  .secretrow { display: flex; gap: .5rem; align-items: flex-end; margin-bottom: .7rem; flex-wrap: wrap; }
+  .secretrow > div:first-child { flex: 1 1 18rem; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <h1>HushReply</h1>
+    <span class="sub" style="margin:0">local only · not reachable from the network</span>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="rules" aria-selected="true">Rules</button>
+    <button role="tab" data-tab="accounts" aria-selected="false">Accounts</button>
+    <button role="tab" data-tab="keys" aria-selected="false">App keys</button>
+  </nav>
+
+  <!-- ── Rules ───────────────────────────────────────────────────────── -->
+  <section id="tab-rules">
+    <p class="sub">
+      Each account has its own rule list, plus a <strong>Shared</strong> list that applies to all of
+      them. Within a list, rules are checked top to bottom and <strong>the first match wins</strong> —
+      specific keywords above general ones, any “matches everything” rule last.
+    </p>
+
+    <nav class="tabs sections" id="sections" role="tablist"></nav>
+    <p class="hint" id="sectionnote" style="margin:-.6rem 0 1rem"></p>
+
+    <div id="rules"></div>
+    <div id="rulesempty" class="card" hidden></div>
+
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem">
+      <button id="add">+ Add rule</button>
+    </div>
+
+    <div class="card">
+      <strong style="font-size:.95rem">Test a comment</strong>
+      <p class="hint" style="margin-top:.2rem">
+        Runs the same matcher the Worker uses, against what's on screen now. Sends nothing.
+        Pick an account to include its own rules — on “no particular account” only shared rules
+        can match.
+      </p>
+      <div class="testrow" style="margin-top:.6rem">
+        <div>
+          <label for="ttext">Comment text</label>
+          <input type="text" id="ttext" placeholder="LINK please" value="LINK please">
+        </div>
+        <div style="flex:0 0 9rem">
+          <label for="tplat">Platform</label>
+          <select id="tplat">
+            <option value="instagram">instagram</option>
+            <option value="facebook">facebook</option>
+          </select>
+        </div>
+        <div style="flex:0 0 12rem">
+          <label for="tacct">On account</label>
+          <select id="tacct"><option value="">any account</option></select>
+        </div>
+        <div style="flex:0 0 auto">
+          <label style="visibility:hidden">go</label>
+          <button id="test" class="primary">Test</button>
+        </div>
+      </div>
+      <div class="checks" style="padding-top:.5rem">
+        <label><input type="checkbox" id="tisreply"> treat as a reply to another comment</label>
+      </div>
+      <div id="verdict" class="verdict"></div>
+    </div>
+  </section>
+
+  <!-- ── Accounts ────────────────────────────────────────────────────── -->
+  <section id="tab-accounts" hidden>
+    <p class="sub">
+      One row per Instagram account or Facebook Page. The <strong>id</strong> must be the IG user id
+      or Page id Meta sends in the webhook — that's what routes a comment to the right token.
+      Stored in the Worker's KV, never in git. Changes take up to a minute to reach the Worker,
+      and need <strong>no redeploy</strong>.
+    </p>
+
+    <div id="accounts"></div>
+    <div id="acctempty" class="card" hidden>
+      <strong style="font-size:.95rem">No accounts stored yet</strong>
+      <p class="hint" style="margin-top:.3rem">
+        Until you save one here, the Worker falls back to the single account in
+        <span class="mono">IG_USER_ID</span> / <span class="mono">FB_PAGE_ID</span> and their token
+        secrets. Adding accounts here takes over from those.
+      </p>
+    </div>
+
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin:0 0 1.5rem">
+      <button id="addig">+ Add Instagram account</button>
+      <button id="addfb">+ Add Facebook Page</button>
+      <button id="saveacct" class="primary">Save accounts</button>
+      <button id="reloadacct">Reload</button>
+      <span id="acctmsg" class="msg"></span>
+    </div>
+
+    <div class="card">
+      <div class="checks" style="padding-top:0">
+        <label>
+          <input type="checkbox" id="acctlocal">
+          edit the <strong>local</strong> KV used by <span class="mono">npm run dev</span> instead of production
+        </label>
+      </div>
+      <p class="hint">
+        Off (the default) reads and writes the live namespace your deployed Worker uses.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── App keys ────────────────────────────────────────────────────── -->
+  <section id="tab-keys" hidden>
+    <p class="sub">
+      App-wide secrets, stored as Worker secrets (<span class="mono">wrangler secret put</span>).
+      These are per Meta <em>app</em>, not per account — a per-account signing secret goes on the
+      account row instead. Setting one here takes effect immediately; no redeploy needed.
+    </p>
+    <div class="card" id="secrets"></div>
+    <div class="card">
+      <p class="hint" style="margin-top:0">
+        <strong>META_APP_SECRET</strong> — App Settings → Basic → App Secret. Signs Facebook webhooks.<br>
+        <strong>IG_APP_SECRET</strong> — Instagram → API setup with Instagram login → Instagram app
+        secret. A <em>different</em> value; Instagram Login apps sign with this one.<br>
+        <strong>VERIFY_TOKEN</strong> — any random string, typed identically into Meta's webhook form.
+      </p>
+    </div>
+  </section>
+
+  <div class="card" id="deploybox" hidden>
+    <strong style="font-size:.95rem">Deploy output</strong>
+    <pre id="deploylog"></pre>
+  </div>
+</div>
+
+<div class="bar">
+  <button id="save" class="primary">Save rules.json</button>
+  <button id="publish" hidden title="Commit rules.json and push it to GitHub. Workers Builds redeploys the Worker.">Commit &amp; push</button>
+  <button id="deploy">Deploy to Cloudflare</button>
+  <span id="msg" class="msg"></span>
+</div>
+
+<script>
+const MATCHES = ["word", "contains", "exact", "starts", "regex", "any"];
+const SHARED = "";
+let config = { defaults: {}, byAccount: {}, shared: [] };
+let accounts = [];
+// Which rule list is on screen: an account label/id, or "" for the shared list.
+let section = SHARED;
+let lastErrors = [];
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function say(text, kind = "") {
+  const el = $("msg");
+  el.textContent = text;
+  el.className = "msg " + kind;
+}
+function sayAcct(text, kind = "") {
+  const el = $("acctmsg");
+  el.textContent = text;
+  el.className = "msg " + kind;
+}
+
+// rules.json allows a string or an array for publicReply; the editor always shows
+// one variant per line and writes back whichever shape fits.
+const replyToText = (v) => (v === undefined ? "" : Array.isArray(v) ? v.join("\n") : v);
+const listToText = (v) => (Array.isArray(v) ? v.join("\n") : (v ?? ""));
+const textToList = (s) => s.split("\n").map((x) => x.trim()).filter(Boolean);
+
+// ── tabs ───────────────────────────────────────────────────────────────
+document.querySelectorAll(".tabs button").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tabs button").forEach((b) =>
+      b.setAttribute("aria-selected", String(b === btn)));
+    for (const name of ["rules", "accounts", "keys"]) {
+      $("tab-" + name).hidden = name !== btn.dataset.tab;
+    }
+    // The bottom bar only acts on rules.json.
+    const isRules = btn.dataset.tab === "rules";
+    $("save").hidden = !isRules;
+    if (btn.dataset.tab === "keys") loadSecrets();
+  });
+});
+
+// ── rules ──────────────────────────────────────────────────────────────
+/** The array being edited. Created on demand so empty sections aren't persisted. */
+function rulesOf(key) {
+  if (key === SHARED) return (config.shared ??= []);
+  config.byAccount ??= {};
+  return (config.byAccount[key] ??= []);
+}
+
+/** Every section to show a tab for: each account, any orphans, then Shared. */
+function sectionKeys() {
+  const labels = accounts.map((a) => a.label).filter(Boolean);
+  const orphans = Object.keys(config.byAccount ?? {}).filter((k) => !labels.includes(k));
+  return [...labels, ...orphans];
+}
+
+function isOrphan(key) {
+  return key !== SHARED && !accounts.some((a) => a.label === key);
+}
+
+function renderSections() {
+  const host = $("sections");
+  const keys = [...sectionKeys(), SHARED];
+  if (!keys.includes(section)) section = SHARED;
+
+  host.innerHTML = keys.map((key) => {
+    const bad = lastErrors.filter((e) => e.section === key).length;
+    const n = (key === SHARED ? config.shared : config.byAccount?.[key])?.length ?? 0;
+    const name = key === SHARED ? "Shared" : key;
+    return `<button role="tab" data-section="${esc(key)}"
+      aria-selected="${key === section}" class="${isOrphan(key) ? "orphan" : ""}"
+      >${esc(name)}${n ? `<span class="count">${n}</span>` : ""}${bad ? `<span class="badge">${bad}</span>` : ""}</button>`;
+  }).join("");
+
+  host.querySelectorAll("[data-section]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      section = btn.dataset.section;
+      // Test the list you're looking at, not whatever was selected before.
+      const sel = $("tacct");
+      if ([...sel.options].some((o) => o.value === section)) sel.value = section;
+      render(lastErrors);
+    });
+  });
+
+  const note = $("sectionnote");
+  if (section === SHARED) {
+    note.textContent =
+      "Shared rules apply to every account, and are checked after that account's own rules — " +
+      "so an account can override one by reusing its id.";
+  } else if (isOrphan(section)) {
+    note.innerHTML =
+      `<strong style="color:var(--warnink)">No account is labelled “${esc(section)}”.</strong> ` +
+      `These rules can never fire. Rename an account to match on the Accounts tab, or move these ` +
+      `rules to another list.`;
+  } else {
+    note.textContent = `Only comments on “${section}” are checked against these.`;
+  }
+}
+
+function render(errors = lastErrors) {
+  lastErrors = errors;
+  renderSections();
+
+  const mine = errors.filter((e) => e.section === section);
+  const byIndex = new Map(mine.map((e) => [e.index, e.message]));
+  const host = $("rules");
+  host.innerHTML = "";
+
+  const list = rulesOf(section);
+  const empty = $("rulesempty");
+  empty.hidden = list.length > 0;
+  empty.innerHTML = list.length
+    ? ""
+    : `<strong style="font-size:.95rem">No rules here yet</strong>
+       <p class="hint" style="margin-top:.3rem">${
+         section === SHARED
+           ? "Add a rule that should apply to every account."
+           : `Add a rule that only applies to “${esc(section)}”.`
+       }</p>`;
+
+  list.forEach((r, i) => {
+    const err = byIndex.get(i);
+    const div = document.createElement("div");
+    div.className = "card rule" + (r.enabled === false ? " disabled" : "") + (err ? " invalid" : "");
+    div.innerHTML = `
+      <div class="rowtop">
+        <span class="idx">#${i + 1}</span>
+        <input type="text" class="grow" data-f="id" placeholder="rule id (optional)" value="${esc(r.id)}">
+        <button class="icon" data-a="up" title="Move up" ${i === 0 ? "disabled" : ""}>↑</button>
+        <button class="icon" data-a="down" title="Move down" ${i === list.length - 1 ? "disabled" : ""}>↓</button>
+        <button class="icon" data-a="dup" title="Duplicate">⧉</button>
+        <button class="icon" data-a="del" title="Delete">✕</button>
+      </div>
+      <div class="grid">
+        <div>
+          <label>Keyword <span style="opacity:.7">(blank = every comment)</span></label>
+          <input type="text" data-f="keyword" value="${esc(r.keyword)}">
+        </div>
+        <div>
+          <label>Match mode</label>
+          <select data-f="match">${MATCHES.map((m) =>
+            `<option value="${m}"${r.match === m ? " selected" : ""}>${m}</option>`).join("")}</select>
+        </div>
+        <div>
+          <label>Cooldown (hours per person)</label>
+          <input type="number" min="0" step="1" data-f="cooldownHours" value="${r.cooldownHours ?? ""}">
+        </div>
+        <div class="checks">
+          <label><input type="checkbox" data-f="pf_instagram"${(r.platforms ?? []).includes("instagram") ? " checked" : ""}> instagram</label>
+          <label><input type="checkbox" data-f="pf_facebook"${(r.platforms ?? []).includes("facebook") ? " checked" : ""}> facebook</label>
+        </div>
+        <div class="full">
+          <label>DM text <span style="opacity:.7">(blank = no DM)</span></label>
+          <textarea data-f="dm" placeholder="Here's the link 👉 https://…">${esc(r.dm)}</textarea>
+          <div class="hint">{{name}} is replaced with the commenter's username.</div>
+        </div>
+        <div class="full">
+          <label>Public reply — one variant per line <span style="opacity:.7">(blank = no reply)</span></label>
+          <textarea data-f="publicReply" placeholder="Just sent it to your DMs 📬">${esc(replyToText(r.publicReply))}</textarea>
+          <div class="hint">Several lines = rotated per comment, so it doesn't read as canned.</div>
+        </div>
+        <div class="full">
+          <label>Exclude — skip if the comment contains any of these (one per line)</label>
+          <textarea data-f="exclude" style="min-height:3rem">${esc(listToText(r.exclude))}</textarea>
+        </div>
+        <div class="checks">
+          <label title="Facebook only — Instagram has no API for liking comments">
+            <input type="checkbox" data-f="like"${r.like ? " checked" : ""}> like the comment
+            <span style="opacity:.7">(Facebook only)</span>
+          </label>
+        </div>
+        <div class="checks">
+          <label><input type="checkbox" data-f="includeReplies"${r.includeReplies !== false ? " checked" : ""}> may fire on replies to other comments</label>
+          <label><input type="checkbox" data-f="enabled"${r.enabled !== false ? " checked" : ""}> enabled</label>
+        </div>
+      </div>
+      ${err ? `<div class="errs"><strong>Won't save:</strong> ${esc(err)}</div>` : ""}`;
+
+    div.querySelectorAll("[data-f]").forEach((el) => {
+      el.addEventListener(el.type === "checkbox" || el.tagName === "SELECT" ? "change" : "input", () => collect(i, div));
+    });
+    div.querySelectorAll("[data-a]").forEach((btn) => {
+      btn.addEventListener("click", () => act(btn.dataset.a, i));
+    });
+    host.appendChild(div);
+  });
+}
+
+function collect(i, div) {
+  const g = (f) => div.querySelector(`[data-f="${f}"]`);
+  const r = {};
+  const id = g("id").value.trim();
+  if (id) r.id = id;
+  const keyword = g("keyword").value;
+  if (keyword) r.keyword = keyword;
+  r.match = g("match").value;
+
+  const platforms = [];
+  if (g("pf_instagram").checked) platforms.push("instagram");
+  if (g("pf_facebook").checked) platforms.push("facebook");
+  r.platforms = platforms;
+
+  const dm = g("dm").value;
+  if (dm.trim()) r.dm = dm;
+
+  const reply = textToList(g("publicReply").value);
+  if (reply.length === 1) r.publicReply = reply[0];
+  else if (reply.length > 1) r.publicReply = reply;
+
+  const exclude = textToList(g("exclude").value);
+  if (exclude.length) r.exclude = exclude;
+
+  const cd = g("cooldownHours").value;
+  if (cd !== "") r.cooldownHours = Number(cd);
+
+  if (g("like").checked) r.like = true;
+
+  if (!g("includeReplies").checked) r.includeReplies = false;
+  if (!g("enabled").checked) r.enabled = false;
+
+  // A rule's scope now comes from the list it's in, not a field on the rule.
+  rulesOf(section)[i] = r;
+  say("unsaved changes", "");
+}
+
+function act(a, i) {
+  const list = rulesOf(section);
+  if (a === "del") list.splice(i, 1);
+  if (a === "dup") list.splice(i + 1, 0, structuredClone(list[i]));
+  if (a === "up" && i > 0) list.splice(i - 1, 0, list.splice(i, 1)[0]);
+  if (a === "down" && i < list.length - 1) list.splice(i + 1, 0, list.splice(i, 1)[0]);
+  render();
+  say("unsaved changes", "");
+}
+
+/** An older rules.json is a flat list; show it as the shared list. */
+function migrate(cfg) {
+  const out = { defaults: cfg.defaults ?? {}, byAccount: cfg.byAccount ?? {}, shared: cfg.shared ?? [] };
+  if (Array.isArray(cfg.rules) && cfg.rules.length) out.shared = [...out.shared, ...cfg.rules];
+  return out;
+}
+
+async function load() {
+  const res = await fetch("/api/rules");
+  const data = await res.json();
+  config = migrate(data.config ?? {});
+  // A Git-connected copy (what the Deploy button creates) redeploys on push.
+  $("publish").hidden = !data.gitRemote;
+  render(data.errors ?? []);
+  say(data.errors?.length ? `${data.errors.length} rule(s) need fixing` : "loaded", data.errors?.length ? "bad" : "");
+}
+
+// ── accounts ───────────────────────────────────────────────────────────
+function renderAccounts(errors = []) {
+  const byIndex = new Map(errors.map((e) => [e.index, e.message]));
+  const host = $("accounts");
+  host.innerHTML = "";
+  $("acctempty").hidden = accounts.length > 0;
+
+  accounts.forEach((a, i) => {
+    const err = byIndex.get(i);
+    const div = document.createElement("div");
+    div.className = "card acct" + (a.enabled === false ? " disabled" : "") + (err ? " invalid" : "");
+    const isIg = a.platform === "instagram";
+    div.innerHTML = `
+      <div class="rowtop">
+        <span class="idx">#${i + 1}</span>
+        <input type="text" class="grow" data-f="label" placeholder="label, e.g. main ig" value="${esc(a.label)}">
+        <span class="pill${a.tokenSet ? " on" : ""}">${a.tokenSet ? "token set" : "no token"}</span>
+        <button class="icon" data-a="del" title="Delete">✕</button>
+      </div>
+      <div class="grid">
+        <div>
+          <label>Platform</label>
+          <select data-f="platform">
+            <option value="instagram"${isIg ? " selected" : ""}>instagram</option>
+            <option value="facebook"${!isIg ? " selected" : ""}>facebook</option>
+          </select>
+        </div>
+        <div>
+          <label>${isIg ? "Instagram user id" : "Facebook Page id"}</label>
+          <input type="text" class="mono" data-f="id" placeholder="17841…" value="${esc(a.id)}">
+        </div>
+        <div${isIg ? "" : ' style="display:none"'}>
+          <label>Instagram login mode</label>
+          <select data-f="igLoginMode">
+            <option value=""${!a.igLoginMode ? " selected" : ""}>use the default</option>
+            <option value="instagram"${a.igLoginMode === "instagram" ? " selected" : ""}>instagram login (60-day token)</option>
+            <option value="facebook"${a.igLoginMode === "facebook" ? " selected" : ""}>facebook login (Page token)</option>
+          </select>
+        </div>
+        <div class="full">
+          <label>${isIg ? "Instagram access token" : "Page access token"}</label>
+          <input type="text" class="mono" data-f="token" placeholder="paste a new token to replace" value="${esc(a.token)}">
+          <div class="hint">
+            Only the last 6 characters of the stored token are shown. Leave it as-is to keep it;
+            paste a full token to replace it.
+          </div>
+        </div>
+        <div class="full">
+          <label>App secret for this account <span style="opacity:.7">(optional)</span></label>
+          <input type="text" class="mono" data-f="appSecret" placeholder="only if this account is under a different Meta app" value="${esc(a.appSecret)}">
+          <div class="hint">
+            Blank = signed with the app-wide secrets on the “App keys” tab.
+          </div>
+        </div>
+        <div class="checks">
+          <label><input type="checkbox" data-f="enabled"${a.enabled !== false ? " checked" : ""}> enabled</label>
+        </div>
+      </div>
+      ${err ? `<div class="errs"><strong>Won't save:</strong> ${esc(err)}</div>` : ""}`;
+
+    div.querySelectorAll("[data-f]").forEach((el) => {
+      el.addEventListener(el.type === "checkbox" || el.tagName === "SELECT" ? "change" : "input", () => {
+        collectAccount(i, div);
+        // Platform decides which fields make sense, so redraw the row.
+        if (el.dataset.f === "platform") renderAccounts();
+      });
+    });
+    div.querySelector('[data-a="del"]').addEventListener("click", () => {
+      accounts.splice(i, 1);
+      renderAccounts();
+      sayAcct("unsaved changes");
+    });
+    host.appendChild(div);
+  });
+
+  // Keep the Test box's dropdown in sync with the accounts that exist.
+  const sel = $("tacct");
+  const current = sel.value;
+  sel.innerHTML = `<option value="">no particular account</option>` + accounts
+    .filter((a) => a.label)
+    .map((a) => `<option value="${esc(a.label)}">${esc(a.label)}</option>`)
+    .join("");
+  sel.value = [...sel.options].some((o) => o.value === current) ? current : "";
+}
+
+function collectAccount(i, div) {
+  const g = (f) => div.querySelector(`[data-f="${f}"]`);
+  const prev = accounts[i] ?? {};
+  const a = {
+    label: g("label").value.trim(),
+    platform: g("platform").value,
+    id: g("id").value.trim(),
+    token: g("token").value.trim(),
+    tokenSet: prev.tokenSet,
+  };
+  const secret = g("appSecret").value.trim();
+  if (secret) a.appSecret = secret;
+  const mode = g("igLoginMode");
+  if (a.platform === "instagram" && mode && mode.value) a.igLoginMode = mode.value;
+  if (!g("enabled").checked) a.enabled = false;
+  accounts[i] = a;
+  sayAcct("unsaved changes");
+}
+
+async function loadAccounts() {
+  sayAcct("loading…");
+  try {
+    const res = await fetch("/api/accounts" + ($("acctlocal").checked ? "?local=1" : ""));
+    const data = await res.json();
+    if (!res.ok) return sayAcct(data.error ?? "could not read accounts", "bad");
+    accounts = data.accounts ?? [];
+    renderAccounts(data.errors);
+    render();
+    sayAcct(
+      data.missing
+        ? "nothing stored yet — using the env-var fallback"
+        : `${data.activeCount} active account(s) in ${data.remote ? "production" : "local"} KV`,
+      data.errors?.length ? "bad" : "ok",
+    );
+  } catch (err) {
+    sayAcct(err.message, "bad");
+  }
+}
+
+$("addig").addEventListener("click", () => {
+  accounts.push({ label: "", platform: "instagram", id: "", token: "" });
+  renderAccounts();
+});
+$("addfb").addEventListener("click", () => {
+  accounts.push({ label: "", platform: "facebook", id: "", token: "" });
+  renderAccounts();
+});
+$("reloadacct").addEventListener("click", loadAccounts);
+$("acctlocal").addEventListener("change", loadAccounts);
+
+$("saveacct").addEventListener("click", async () => {
+  sayAcct("saving…");
+  const res = await fetch("/api/accounts" + ($("acctlocal").checked ? "?local=1" : ""), {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(accounts),
+  });
+  const data = await res.json();
+  if (res.ok) {
+    sayAcct(`saved — ${data.accountCount} active account(s). Live within a minute, no deploy needed.`, "ok");
+    loadAccounts();
+  } else if (data.errors) {
+    renderAccounts(data.errors);
+    sayAcct("not saved — fix the highlighted rows", "bad");
+  } else {
+    sayAcct(data.error ?? "save failed", "bad");
+  }
+});
+
+// ── app keys ───────────────────────────────────────────────────────────
+async function loadSecrets() {
+  const host = $("secrets");
+  host.innerHTML = `<p class="hint" style="margin:0">loading…</p>`;
+  const res = await fetch("/api/secrets");
+  const data = await res.json();
+  host.innerHTML = (data.names ?? []).map((s) => `
+    <div class="secretrow">
+      <div>
+        <label>${esc(s.name)} <span class="pill${s.set ? " on" : ""}">${s.set ? "set" : "not set"}</span></label>
+        <input type="password" class="mono" data-secret="${esc(s.name)}" placeholder="paste a new value to replace">
+      </div>
+      <button data-put="${esc(s.name)}">Update</button>
+    </div>`).join("");
+
+  host.querySelectorAll("[data-put]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const name = btn.dataset.put;
+      const input = host.querySelector(`[data-secret="${name}"]`);
+      if (!input.value.trim()) return say(`${name}: nothing to save`, "bad");
+      btn.disabled = true;
+      say(`setting ${name}…`);
+      const put = await fetch("/api/secrets", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ name, value: input.value }),
+      });
+      const out = await put.json();
+      btn.disabled = false;
+      if (put.ok) {
+        input.value = "";
+        say(`${name} updated`, "ok");
+        loadSecrets();
+      } else {
+        say(out.error ?? `${name} failed`, "bad");
+      }
+    });
+  });
+}
+
+// ── bottom bar ─────────────────────────────────────────────────────────
+$("add").addEventListener("click", () => {
+  rulesOf(section).push({ keyword: "KEYWORD", match: "word", platforms: ["instagram", "facebook"], dm: "" });
+  render();
+  say("unsaved changes", "");
+});
+
+/** Don't persist empty per-account lists — the tabs come from the accounts anyway. */
+function forSaving() {
+  const byAccount = {};
+  for (const [key, list] of Object.entries(config.byAccount ?? {})) {
+    if (Array.isArray(list) && list.length) byAccount[key] = list;
+  }
+  return { defaults: config.defaults ?? {}, byAccount, shared: config.shared ?? [] };
+}
+
+$("save").addEventListener("click", async () => {
+  say("saving…");
+  const res = await fetch("/api/rules", {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(forSaving()),
+  });
+  const data = await res.json();
+  if (res.ok) {
+    render([]);
+    // A Git-connected Worker (the Deploy button's setup) redeploys from GitHub on
+    // every push, which would undo a deploy from here that was never pushed.
+    say(data.gitRemote
+      ? `saved — ${data.ruleCount} active rule(s). Commit & push to apply; Cloudflare redeploys from GitHub.`
+      : `saved — ${data.ruleCount} active rule(s). Deploy to apply.`, "ok");
+  } else if (data.errors) {
+    // Jump to the list holding the first problem, or it'd be highlighted off-screen.
+    const first = data.errors[0];
+    if (first && first.section !== section) section = first.section;
+    render(data.errors);
+    say("not saved — fix the highlighted rules", "bad");
+  } else {
+    say(data.error ?? "save failed", "bad");
+  }
+});
+
+$("test").addEventListener("click", async () => {
+  const label = $("tacct").value;
+  const acct = accounts.find((a) => a.label === label);
+  const res = await fetch("/api/test", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      text: $("ttext").value,
+      platform: $("tplat").value,
+      isReply: $("tisreply").checked,
+      accountLabel: label || undefined,
+      accountId: acct?.id || undefined,
+      config,
+    }),
+  });
+  const data = await res.json();
+  const out = $("verdict");
+
+  if (data.errors) {
+    render(data.errors);
+    out.innerHTML = `<span style="color:var(--bad)">Fix the highlighted rules first.</span>`;
+    return;
+  }
+  if (!data.matched) {
+    out.innerHTML = `<span style="color:var(--dim)">No rule matches — nothing would happen.</span>`;
+    return;
+  }
+  const acts = data.rule.actions.length ? data.rule.actions.join(" + ") : "nothing";
+  out.innerHTML = `
+    <div><span class="tag">${esc(data.rule.id)}</span>
+      <span class="tag">${esc(data.rule.match)}</span>
+      <span class="tag">${esc(acts)}</span>
+      <span class="tag">${data.rule.accounts?.length ? esc(data.rule.accounts.join(", ")) : "shared"}</span>
+      ${data.cooldownHours ? `<span class="tag">then quiet ${data.cooldownHours}h</span>` : ""}</div>
+    ${data.dm ? `<div style="margin-top:.5rem"><strong>DM:</strong><pre>${esc(data.dm)}</pre></div>` : ""}
+    ${data.publicReply ? `<div style="margin-top:.4rem"><strong>Public reply:</strong><pre>${esc(data.publicReply)}</pre></div>` : ""}`;
+});
+
+/** Streams a long-running command's output into the output box. */
+async function stream(url, { start, ok, fail }) {
+  $("deploybox").hidden = false;
+  const log = $("deploylog");
+  log.textContent = `${start}\n`;
+  say(start);
+  try {
+    const res = await fetch(url, { method: "POST" });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      return say(data.error ?? fail, "bad");
+    }
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    log.textContent = "";
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      log.textContent += dec.decode(value, { stream: true });
+      log.scrollTop = log.scrollHeight;
+    }
+    const passed = /exited with code 0 ---/.test(log.textContent);
+    say(passed ? ok : `${fail} — see output`, passed ? "ok" : "bad");
+  } catch (err) {
+    say(`${fail}: ${err.message}`, "bad");
+  }
+}
+
+$("deploy").addEventListener("click", () =>
+  stream("/api/deploy", { start: "deploying…", ok: "deployed", fail: "deploy failed" }));
+
+$("publish").addEventListener("click", () =>
+  stream("/api/publish", {
+    start: "committing and pushing rules.json…",
+    ok: "pushed — Cloudflare redeploys in a minute or two",
+    fail: "push failed",
+  }));
+
+load();
+loadAccounts();
+</script>
+</body>
+</html>

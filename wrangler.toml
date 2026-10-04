@@ -1,0 +1,66 @@
+name = "hushreply"
+main = "src/index.ts"
+compatibility_date = "2026-06-01"
+
+# Daily token refresh. Instagram long-lived tokens expire after 60 days unless
+# refreshed, so this keeps the Worker alive without you touching it.
+[triggers]
+crons = ["17 4 * * *"]
+
+# Keeps the Worker's logs in the Cloudflare dashboard (Worker -> Logs), so you
+# can see matches and errors without the CLI. Free plan: 200k log lines/day.
+[observability]
+enabled = true
+
+# Dedupe claims, cooldowns, cached Instagram tokens and the `accounts` list.
+# No `id` on purpose: the Deploy to Cloudflare button (and `wrangler deploy`,
+# wrangler >= 4.45) creates the namespace for you on first deploy. If you'd
+# rather pin it, run `npx wrangler kv namespace create STATE` and add the
+# printed `id = "..."` line here.
+[[kv_namespaces]]
+binding = "STATE"
+
+# Change these here and commit, not in the Cloudflare dashboard: every deploy
+# resets dashboard-edited vars to what this file says.
+[vars]
+# Default login mode for Instagram accounts that don't set their own on the
+# dashboard's Accounts tab.
+# "instagram" = Instagram API with Instagram Login  (token from graph.instagram.com)
+# "facebook"  = Instagram API with Facebook Login   (Page token, graph.facebook.com)
+IG_LOGIN_MODE = "instagram"
+GRAPH_VERSION = "v26.0"
+# "true" logs every match and skips every outbound API call, so nothing is sent.
+# Ships as "true". Set it to "false" once a test comment shows a match in the logs.
+DRY_RUN = "true"
+# Escape hatches for manual testing only. Both must stay "false" in normal use:
+# the self-comment guard is what stops a catch-all rule answering its own replies
+# forever, and the cooldown is what stops a repeat commenter being DMed every time.
+# Set one to "true" only for a deliberate test, and put it back the same session.
+DISABLE_SELF_COMMENT_GUARD = "false"
+DISABLE_COOLDOWN = "false"
+# Shown on the public /privacy, /terms and /data-deletion pages that Meta's app
+# settings ask for. Put your own name and a real inbox here before going live.
+APP_NAME = "HushReply"
+CONTACT_EMAIL = "you@example.com"
+LEGAL_NAME = ""
+
+# App-wide secrets. The Deploy button asks for them; afterwards change them in
+# the Cloudflare dashboard (Worker -> Settings -> Variables and Secrets), on the
+# local dashboard's "App keys" tab, or with `npx wrangler secret put <NAME>`.
+# Never commit them:
+#   META_APP_SECRET   (App Settings -> Basic -> App Secret)
+#   IG_APP_SECRET     (Instagram -> API setup with Instagram login -> Instagram app secret.
+#                      A DIFFERENT value from META_APP_SECRET — Instagram Login apps sign their
+#                      webhooks with this one, not the main App Secret. Required if IG_LOGIN_MODE
+#                      is "instagram"; see docs/troubleshooting.md if Instagram signatures fail.)
+#   VERIFY_TOKEN      (any random string; you type the same one into Meta's webhook form)
+#
+# Accounts. The quick start is one Instagram account and/or one Facebook Page set
+# as these four secrets (leave a pair blank to skip that platform):
+#   IG_USER_ID        (your Instagram professional account id)
+#   IG_ACCESS_TOKEN   (long-lived Instagram token)
+#   FB_PAGE_ID        (your Facebook Page id)
+#   FB_PAGE_TOKEN     (never-expiring Page access token)
+# For more than one of each, store them in KV under the key `accounts` from the
+# local dashboard's Accounts tab instead. Once KV holds at least one account,
+# these four are ignored.

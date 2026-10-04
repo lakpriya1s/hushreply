@@ -1,0 +1,44 @@
+name: Bug report
+description: Something isn't working as documented
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! **Never paste tokens, app secrets or your `.dev.vars` here.** Redact account ids if you'd rather keep them private.
+        Check [docs/troubleshooting.md](https://github.com/lakpriya1s/hushreply/blob/main/docs/troubleshooting.md) first — most webhook problems are covered there.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - Instagram (Instagram Login)
+        - Instagram (Facebook Login)
+        - Facebook Page
+        - Local dashboard
+        - Deploy to Cloudflare button
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Worker logs
+      description: The relevant lines from Cloudflare → your Worker → Logs, or `npm run tail`. Redact tokens.
+      render: text
+  - type: textarea
+    id: rule
+    attributes:
+      label: The rule involved (if any)
+      render: json
+  - type: input
+    id: version
+    attributes:
+      label: HushReply version or commit

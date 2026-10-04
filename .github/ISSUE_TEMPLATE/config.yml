@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Setup guide
+    url: https://github.com/lakpriya1s/hushreply/blob/main/docs/setup.md
+    about: Step-by-step Meta app, Cloudflare and webhook setup.
+  - name: Report a security vulnerability
+    url: https://github.com/lakpriya1s/hushreply/security/advisories/new
+    about: Please report security issues privately, not as a public issue.

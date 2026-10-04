@@ -1,0 +1,965 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free ManyChat Alternative for Instagram &amp; Facebook | HushReply</title>
+<meta name="description" content="Free, open-source ManyChat alternative. Auto-DM anyone who comments a keyword on your Instagram or Facebook posts. No monthly fee, no contact limits.">
+<meta name="keywords" content="ManyChat alternative, free ManyChat alternative, Instagram comment to DM, Instagram auto DM, Facebook comment auto reply, comment-to-DM, auto DM, DM automation, open source, self-hosted, Cloudflare Workers">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="author" content="Lakpriya Senevirathna">
+<link rel="canonical" href="https://lakpriya1s.github.io/hushreply/">
+<meta name="theme-color" content="#0E5A43">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="sitemap" type="application/xml" href="sitemap.xml">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="HushReply">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Free ManyChat Alternative for Instagram &amp; Facebook | HushReply">
+<meta property="og:description" content="Comment a keyword, get a DM. Free, open-source Instagram and Facebook comment-to-DM automation with no monthly fee and no contact limits.">
+<meta property="og:url" content="https://lakpriya1s.github.io/hushreply/">
+<meta property="og:image" content="https://lakpriya1s.github.io/hushreply/assets/og.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:image:alt" content="HushReply: the free, open-source ManyChat alternative for comment-to-DM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Free ManyChat Alternative for Instagram &amp; Facebook | HushReply">
+<meta name="twitter:description" content="Comment a keyword, get a DM. Free, open-source Instagram and Facebook comment-to-DM automation with no monthly fee and no contact limits.">
+<meta name="twitter:image" content="https://lakpriya1s.github.io/hushreply/assets/og.png">
+<meta name="twitter:image:alt" content="HushReply: the free, open-source ManyChat alternative for comment-to-DM">
+
+<script type="application/ld+json">
+[
+ {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "HushReply",
+  "alternateName": "HushReply comment-to-DM",
+  "description": "Free, open-source ManyChat alternative. Auto-DM anyone who comments a keyword on your Instagram or Facebook posts. No monthly fee, no contact limits.",
+  "url": "https://lakpriya1s.github.io/hushreply/",
+  "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": "Social media automation",
+  "operatingSystem": "Web, Cloudflare Workers",
+  "offers": {
+   "@type": "Offer",
+   "price": "0",
+   "priceCurrency": "USD"
+  },
+  "license": "https://www.gnu.org/licenses/agpl-3.0.html",
+  "isAccessibleForFree": true,
+  "image": "https://lakpriya1s.github.io/hushreply/assets/og.png",
+  "screenshot": [
+   "https://lakpriya1s.github.io/hushreply/assets/dashboard-rules.webp",
+   "https://lakpriya1s.github.io/hushreply/assets/dashboard-test.webp"
+  ],
+  "featureList": [
+   "Instagram comment-to-DM",
+   "Facebook Page comment-to-DM",
+   "Keyword rules with six match modes",
+   "Public replies with rotating variants",
+   "Comment likes on Facebook",
+   "Multiple accounts",
+   "Point-and-click dashboard",
+   "Test mode",
+   "No contact limits"
+  ],
+  "author": {
+   "@type": "Person",
+   "name": "Lakpriya Senevirathna",
+   "url": "https://github.com/lakpriya1s"
+  },
+  "sameAs": [
+   "https://github.com/lakpriya1s/hushreply"
+  ]
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "HushReply",
+  "codeRepository": "https://github.com/lakpriya1s/hushreply",
+  "programmingLanguage": "TypeScript",
+  "runtimePlatform": "Cloudflare Workers",
+  "license": "https://www.gnu.org/licenses/agpl-3.0.html"
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+   {
+    "@type": "Question",
+    "name": "Is it really free?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Yes. HushReply is free, and it runs on Cloudflare's free plan in your own account. That's enough to answer about 500 keyword comments every day, and comments without a keyword cost nothing. If you ever need more, Cloudflare's paid plan is $5 a month."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Do I need Meta to approve anything?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Not for your own accounts. Meta lets an app that only works on your own Pages and Instagram accounts skip its review process. You'd need Meta's approval to run HushReply on other people's accounts."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Is this allowed by Meta?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Yes. It uses Meta's own official feature for answering a comment with a private message, the same one the big tools use. It never logs in as you and never scrapes anything. Meta's rules: one private message per comment, sent within 7 days of the comment."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "What does my Instagram account need?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "It must be a public Business or Creator account, with “Allow access to messages” turned on in Instagram's message settings. It works on comments on your own posts."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Can I run it for clients?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Not out of the box. Running it on accounts you don't own needs Meta's approval process. Each client can set up their own free copy instead."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Do I need to know how to code?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "No. The Deploy button asks for everything it needs, and the dashboard turns rules, accounts and keys into forms, so you never edit a file by hand. The dashboard runs on your computer, so you install Node.js once and copy-paste a few commands. With one Instagram account and one Page you can skip it and edit rules in GitHub's web editor instead."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Can I change it or share it?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Yes. It's open source (AGPL-3.0 license): use it, change it and run it for free. If you offer a changed version as a service to other people, you share your changes too."
+    }
+   }
+  ]
+ }
+]
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=League+Gothic&family=Libre+Franklin:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --cloth: #0E5A43;
+  --cloth-deep: #093D2E;
+  --shelf: #E4EBE3;
+  --paper: #FAFBF7;
+  --ink: #13201A;
+  --ink-soft: #44564C;
+  --rule-red: #CC3A2F;
+  --rule-blue: #C3D4E6;
+  --stamp: #5636BE;
+  --brass: #D1AA52;
+  --on-cloth: #F3F6F1;
+  --on-cloth-soft: #C3D9CE;
+  --line: #C9D4CA;
+  --card-shadow: 0 1px 1px rgba(0, 0, 0, .06), 0 14px 28px -16px rgba(0, 0, 0, .4);
+
+  --display: "League Gothic", "Arial Narrow", sans-serif;
+  --text: "Libre Franklin", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --typed: "Courier Prime", "Courier New", monospace;
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --gutter: clamp(1rem, 4vw, 3rem);
+  --ruled: 1.625rem;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cloth: #0B3328;
+    --cloth-deep: #061C15;
+    --shelf: #0C1612;
+    --paper: #14251E;
+    --ink: #E4EDE7;
+    --ink-soft: #A8BCB1;
+    --rule-red: #E26A5F;
+    --rule-blue: #233A50;
+    --stamp: #AB98FF;
+    --brass: #DDB967;
+    --on-cloth: #EAF1EC;
+    --on-cloth-soft: #A9C6B8;
+    --line: #26392F;
+    --card-shadow: 0 1px 1px rgba(0, 0, 0, .3), 0 16px 30px -18px rgba(0, 0, 0, .8);
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; background: var(--cloth-deep); }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--shelf);
+  color: var(--ink);
+  font: 400 1.0625rem/1.6 var(--text);
+  overflow-x: hidden;
+}
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; text-underline-offset: .18em; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--brass); outline-offset: 3px; border-radius: 3px; }
+code { font-family: var(--typed); font-size: .92em; }
+
+.nw { white-space: nowrap; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip {
+  position: absolute; left: 1rem; top: -4rem; z-index: 10;
+  background: var(--paper); color: var(--ink); padding: .6rem 1rem; border-radius: 6px;
+}
+.skip:focus { top: 1rem; }
+
+.wrap { width: min(72rem, 100%); margin: 0 auto; padding: 0 var(--gutter); }
+
+h1, h2, h3 { font-family: var(--display); font-weight: 400; line-height: .98; letter-spacing: .005em; margin: 0; text-wrap: balance; }
+h2 { font-size: clamp(2.6rem, 6vw, 4.25rem); }
+h3 { font-size: 1.75rem; }
+.lead { font-size: clamp(1.08rem, 1.8vw, 1.2rem); max-width: 40rem; margin: 1rem 0 0; color: var(--ink-soft); }
+section { padding: clamp(4.5rem, 10vw, 7.5rem) 0; }
+.section-head { margin-bottom: clamp(2.25rem, 5vw, 3.5rem); }
+
+/* Green bookcloth fields */
+.cloth { background: var(--cloth); color: var(--on-cloth); }
+.cloth .lead { color: var(--on-cloth-soft); }
+.cloth a:not(.button):not(.deploy) { color: var(--on-cloth); }
+
+/* ---------- Masthead ---------- */
+.masthead { background: var(--cloth); color: var(--on-cloth); }
+.masthead .wrap { display: flex; align-items: center; gap: 1.5rem; min-height: 4.5rem; }
+.brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; font-family: var(--display); font-size: 1.9rem; line-height: 1; letter-spacing: .01em; }
+.brand img { width: 2.1rem; height: 2.1rem; }
+.nav { display: none; margin-left: auto; gap: 1.6rem; font-size: .95rem; font-weight: 500; }
+.nav a { text-decoration: none; color: var(--on-cloth-soft); }
+.nav a:hover { color: var(--on-cloth); text-decoration: underline; }
+.masthead .gh-small { margin-left: auto; }
+@media (min-width: 52rem) {
+  .nav { display: flex; }
+  .masthead .gh-small { margin-left: 0; }
+}
+
+.button {
+  display: inline-flex; align-items: center; gap: .55rem;
+  min-height: 2.9rem; padding: 0 1.15rem;
+  border-radius: 6px; border: 1.5px solid currentColor;
+  font-weight: 600; font-size: .98rem; text-decoration: none; white-space: nowrap;
+  transition: background-color .25s var(--ease-out), color .25s var(--ease-out), transform .25s var(--ease-out);
+}
+.button svg { width: 1.15rem; height: 1.15rem; flex: none; }
+.button:hover { transform: translateY(-1px); }
+.cloth .button, .masthead .button { color: var(--on-cloth); }
+.cloth .button:hover, .masthead .button:hover { background: var(--on-cloth); color: var(--cloth); }
+.gh-small { min-height: 2.5rem; padding: 0 .85rem; font-size: .9rem; }
+
+.deploy { display: inline-block; border-radius: 6px; transition: transform .25s var(--ease-out), box-shadow .25s var(--ease-out); }
+.deploy img { width: 221px; height: 47px; }
+.deploy:hover { transform: translateY(-1px); box-shadow: 0 10px 20px -12px rgba(0, 0, 0, .6); }
+
+/* ---------- Hero ---------- */
+.hero { padding: clamp(2rem, 5vw, 3.75rem) 0 clamp(4rem, 9vw, 6.5rem); }
+.hero .wrap { display: grid; gap: clamp(3rem, 6vw, 4.5rem); align-items: center; }
+@media (min-width: 60rem) { .hero .wrap { grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr); } }
+.hero h1 { font-size: clamp(3rem, 5.4vw, 4.85rem); line-height: .94; max-width: 22ch; }
+.hero .lead { margin-top: 1.4rem; font-size: clamp(1.06rem, 1.6vw, 1.17rem); max-width: 36rem; }
+.ctas { display: flex; flex-wrap: wrap; align-items: center; gap: .9rem 1rem; margin-top: 2rem; }
+.plaque {
+  display: inline-block; margin-top: 2.25rem;
+  background: var(--paper); color: var(--cloth);
+  font-family: var(--display); font-size: clamp(1.15rem, 2.3vw, 1.45rem); letter-spacing: .09em; text-transform: uppercase; line-height: 1;
+  padding: .7rem 1.1rem .62rem; border-radius: 7px;
+  box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 4.5px var(--cloth), 0 10px 22px -14px rgba(0, 0, 0, .7);
+}
+@media (prefers-color-scheme: dark) { .plaque { color: var(--on-cloth); background: var(--cloth-deep); box-shadow: inset 0 0 0 3px var(--cloth-deep), inset 0 0 0 4.5px var(--on-cloth-soft), 0 10px 22px -14px rgba(0, 0, 0, .7); } }
+
+/* Phone demo */
+.demo { margin: 0; justify-self: center; width: min(100%, 21.5rem); }
+.phone {
+  position: relative; background: #0B1310; border-radius: 2.4rem; padding: .7rem;
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, .12), 0 34px 60px -30px rgba(0, 0, 0, .75);
+}
+.screen {
+  position: relative; overflow: hidden; border-radius: 1.8rem;
+  background: #FBFCF9; color: #17221C; min-height: 31rem;
+  font-size: .9rem; line-height: 1.4;
+}
+@media (prefers-color-scheme: dark) { .screen { background: #111A16; color: #E3ECE6; } }
+.post-head { display: flex; align-items: center; gap: .55rem; padding: 2.4rem 1rem .7rem; font-weight: 600; font-size: .85rem; }
+.post-art {
+  position: relative; height: 9.5rem; margin: 0 1rem; border-radius: .8rem;
+  background:
+    linear-gradient(160deg, transparent 55%, rgba(9, 61, 46, .55) 55.3%),
+    linear-gradient(200deg, #5DA287 0%, #0E5A43 100%);
+}
+.post-art::before { content: ""; position: absolute; right: 18%; top: 16%; width: 3.2rem; height: 3.2rem; border-radius: 50%; background: #F1C66A; }
+.caption { margin: .7rem 1rem 0; font-size: .85rem; }
+.caption b { font-weight: 600; }
+.thread { list-style: none; margin: .8rem 0 0; padding: .8rem 1rem 1rem; border-top: 1px solid rgba(23, 34, 28, .1); display: grid; gap: .8rem; }
+@media (prefers-color-scheme: dark) { .thread { border-top-color: rgba(255, 255, 255, .08); } }
+.thread-label { font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; opacity: .62; }
+.c { display: flex; gap: .6rem; align-items: flex-start; }
+.c.reply { margin-left: 2.2rem; }
+.c b { display: block; font-size: .8rem; font-weight: 600; }
+.c p { margin: .05rem 0 0; }
+.av { flex: none; width: 1.9rem; height: 1.9rem; border-radius: 50%; display: grid; place-items: center; font-size: .8rem; font-weight: 700; color: #fff; }
+.av-m { background: #B4573C; }
+.av-y { background: #13805E; }
+.av-y img { width: 1.15rem; height: 1.15rem; filter: brightness(10); }
+
+.dm {
+  position: absolute; left: 1.1rem; right: 1.1rem; top: 1.35rem; z-index: 2;
+  background: var(--paper); color: var(--ink);
+  border-radius: 1.1rem; padding: .85rem .95rem .8rem;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .04), 0 22px 40px -18px rgba(0, 0, 0, .55);
+  font-size: .86rem; line-height: 1.4;
+}
+.dm-head { display: flex; align-items: center; gap: .5rem; font-size: .74rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-soft); }
+.dm-head img { width: 1.05rem; height: 1.05rem; }
+.dm p { margin: .4rem 0 0; }
+.dm .link { display: flex; justify-content: space-between; align-items: center; gap: .5rem; margin-top: .55rem; font-family: var(--typed); font-size: .82rem; color: var(--cloth); }
+@media (prefers-color-scheme: dark) { .dm .link { color: #8FD3B5; } }
+.stamp {
+  flex: none; margin-right: .1rem;
+  font-family: var(--display); font-size: 1.3rem; letter-spacing: .08em; line-height: 1;
+  color: var(--stamp); border: 2.5px solid currentColor; border-radius: 5px; padding: .18rem .45rem .08rem;
+  transform: rotate(-9deg);
+  mix-blend-mode: multiply;
+}
+@media (prefers-color-scheme: dark) { .stamp { mix-blend-mode: normal; } }
+.demo figcaption { margin-top: 1rem; font-size: .8rem; text-align: center; color: var(--on-cloth-soft); }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Starts mid-cycle so the first paint already tells the whole story; the stamp lands just after load. */
+  .c-1, .c-2, .dm, .stamp { animation: 12s var(--ease-out) -6.1s infinite both; }
+  .c-1 { animation-name: show-comment; }
+  .c-2 { animation-name: show-reply; }
+  .dm { animation-name: show-dm; }
+  .stamp { animation-name: show-stamp; }
+}
+@keyframes show-comment {
+  0%, 4% { opacity: 0; transform: translateY(10px); }
+  10%, 90% { opacity: 1; transform: none; }
+  97%, 100% { opacity: 0; transform: none; }
+}
+@keyframes show-reply {
+  0%, 20% { opacity: 0; transform: translateY(10px); }
+  27%, 90% { opacity: 1; transform: none; }
+  97%, 100% { opacity: 0; transform: none; }
+}
+@keyframes show-dm {
+  0%, 37% { opacity: 0; transform: translateY(-115%); }
+  45%, 90% { opacity: 1; transform: none; }
+  97%, 100% { opacity: 0; transform: translateY(-115%); }
+}
+@keyframes show-stamp {
+  0%, 51% { opacity: 0; transform: rotate(-9deg) scale(1.9); filter: blur(2px); }
+  55% { opacity: 1; transform: rotate(-9deg) scale(.94); filter: none; }
+  58%, 90% { opacity: 1; transform: rotate(-9deg) scale(1); }
+  97%, 100% { opacity: 0; transform: rotate(-9deg) scale(1); }
+}
+
+/* ---------- Catalog cards ---------- */
+.card {
+  position: relative; background: var(--paper); color: var(--ink);
+  border-radius: 5px; box-shadow: var(--card-shadow);
+  padding: 1.15rem 1.35rem 2.6rem;
+}
+.card::after {
+  content: ""; position: absolute; left: 50%; bottom: .9rem; width: .8rem; height: .8rem; border-radius: 50%;
+  transform: translateX(-50%);
+  background: var(--shelf); box-shadow: inset 0 1px 2px rgba(0, 0, 0, .28);
+}
+.card h3 { padding-bottom: .55rem; border-bottom: 2px solid var(--rule-red); }
+.ruled {
+  list-style: none; margin: 0; padding: 0;
+  font-size: .97rem; line-height: var(--ruled);
+  background: repeating-linear-gradient(to bottom, transparent 0 calc(var(--ruled) - 1px), var(--rule-blue) calc(var(--ruled) - 1px) var(--ruled));
+}
+.ruled li { padding-left: 1.1rem; position: relative; }
+.ruled li::before { content: ""; position: absolute; left: .1rem; top: calc(var(--ruled) / 2 - 2px); width: 5px; height: 5px; border-radius: 50%; background: var(--rule-red); }
+.ruled li + li { margin-top: 0; }
+.ruled strong { font-weight: 600; }
+.ruled code { color: var(--ink); }
+
+.drawer { display: grid; gap: 1.5rem; align-items: start; }
+@media (min-width: 44rem) { .drawer { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 66rem) {
+  .drawer { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .drawer .card:nth-child(1) { grid-column: span 3; }
+  .drawer .card:nth-child(2) { grid-column: span 3; }
+  .drawer .card:nth-child(3) { grid-column: span 2; }
+  .drawer .card:nth-child(4) { grid-column: span 2; }
+  .drawer .card:nth-child(5) { grid-column: span 2; }
+}
+.drawer .card:nth-child(odd) { transform: rotate(-.35deg); }
+.drawer .card:nth-child(even) { transform: rotate(.3deg); }
+
+/* ---------- Cost ---------- */
+.cost .wrap { display: grid; gap: clamp(2.5rem, 6vw, 4.5rem); align-items: start; }
+@media (min-width: 60rem) { .cost .wrap { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); } }
+.cost h2 { font-size: clamp(3.6rem, 10vw, 6rem); }
+.cost-notes { margin: 1.5rem 0 0; padding: 0; list-style: none; display: grid; gap: .85rem; max-width: 32rem; color: var(--on-cloth-soft); }
+.cost-notes strong { color: var(--on-cloth); font-weight: 600; }
+.slip { padding: 1.35rem 1.4rem 2.7rem; }
+.slip h3 { padding-right: 5.5rem; }
+.slip dl { margin: 0; font-size: .95rem; line-height: var(--ruled);
+  background: repeating-linear-gradient(to bottom, transparent 0 calc(var(--ruled) * 2 - 1px), var(--rule-blue) calc(var(--ruled) * 2 - 1px) calc(var(--ruled) * 2));
+}
+.slip .row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 1rem; min-height: calc(var(--ruled) * 2); padding: calc(var(--ruled) / 4) 0; }
+.slip dt { color: var(--ink-soft); line-height: 1.35; }
+.slip dd { margin: 0; font-family: var(--typed); font-weight: 700; color: var(--stamp); text-align: right; line-height: 1.3; }
+.slip .row:nth-child(3n) dd { transform: rotate(-1.2deg); }
+.slip .row:nth-child(3n+1) dd { transform: rotate(.8deg); }
+.rubber {
+  position: absolute; right: 1.1rem; top: -1.6rem;
+  width: 6.4rem; height: 6.4rem; border-radius: 50%;
+  display: grid; place-content: center; text-align: center;
+  color: var(--stamp); border: 3px solid currentColor;
+  box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5.5px currentColor;
+  background: var(--paper);
+  font-family: var(--display); line-height: .9; letter-spacing: .06em; text-transform: uppercase;
+  transform: rotate(11deg);
+}
+.rubber b { display: block; font-size: 2.2rem; font-weight: 400; }
+.rubber span { font-size: .78rem; }
+
+/* ---------- Compare ---------- */
+.register { padding: .5rem clamp(.5rem, 2vw, 1.5rem) 2.6rem; }
+.register table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: .93rem; line-height: 1.4; }
+.register caption { text-align: left; }
+.register th, .register td { text-align: left; vertical-align: top; padding: .8rem .7rem; border-bottom: 1px solid var(--rule-blue); overflow-wrap: anywhere; }
+.register thead th { font-family: var(--display); font-weight: 400; font-size: 1.55rem; letter-spacing: .02em; line-height: 1; border-bottom: 2px solid var(--rule-red); padding-top: 1.1rem; }
+.register tbody th { font-weight: 600; color: var(--ink); width: 34%; }
+.register td { color: var(--ink-soft); }
+.register td.us { color: var(--ink); }
+.register .mark { font-family: var(--typed); font-weight: 700; letter-spacing: .03em; }
+.register td.us .mark { color: var(--stamp); }
+.register tbody tr:last-child th, .register tbody tr:last-child td { border-bottom: 0; }
+@media (max-width: 40rem) {
+  .register thead th { font-size: 1.25rem; }
+  .register th, .register td { padding: .7rem .4rem; font-size: .86rem; }
+  .register tbody th { width: 31%; }
+}
+.fineprint { margin: 1.5rem 0 0; font-size: .85rem; color: var(--ink-soft); max-width: 46rem; }
+
+/* ---------- Setup ---------- */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.steps li { display: grid; grid-template-columns: 4.2rem minmax(0, 1fr); gap: 1.1rem; padding: 1.6rem 0; border-bottom: 1px solid var(--line); }
+@media (min-width: 52rem) { .steps li { grid-template-columns: 5.2rem minmax(0, 18rem) minmax(0, 1fr); gap: 1.75rem; align-items: baseline; } }
+.spine {
+  align-self: start; display: grid; place-items: center;
+  width: 3.4rem; height: 4.3rem; border-radius: 4px;
+  background: var(--paper); color: var(--ink); box-shadow: var(--card-shadow);
+  font-family: var(--display); font-size: 2.3rem; line-height: 1;
+  border-top: 5px solid var(--cloth);
+}
+@media (prefers-color-scheme: dark) { .spine { border-top-color: #2E8C69; } }
+.steps h3 { font-size: 1.85rem; align-self: center; }
+.steps p { margin: .4rem 0 0; color: var(--ink-soft); max-width: 38rem; }
+@media (min-width: 52rem) { .steps p { margin: 0; align-self: center; } }
+@media (max-width: 51.99rem) {
+  .steps li { grid-template-rows: auto 1fr; row-gap: .35rem; }
+  .steps .spine { grid-row: 1 / span 2; }
+  .steps h3 { align-self: start; padding-top: .35rem; }
+  .steps .step-body { grid-column: 2; margin: 0; }
+}
+.steps code { background: var(--paper); padding: .1rem .35rem; border-radius: 4px; color: var(--ink); overflow-wrap: anywhere; }
+
+/* ---------- Rule card ---------- */
+.rule .wrap { display: grid; gap: clamp(2.5rem, 6vw, 4rem); align-items: start; }
+@media (min-width: 60rem) { .rule .wrap { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); } }
+.rule-card { padding: 1.2rem 1.35rem 2.8rem; transform: rotate(-.6deg); }
+.rule-card h3 { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
+.rule-card h3 small { font-family: var(--typed); font-size: .82rem; color: var(--ink-soft); letter-spacing: .02em; }
+.rule-card pre {
+  margin: 0; font-family: var(--typed); font-size: .88rem; line-height: var(--ruled);
+  white-space: pre-wrap; overflow-wrap: anywhere;
+  background: repeating-linear-gradient(to bottom, transparent 0 calc(var(--ruled) - 1px), var(--rule-blue) calc(var(--ruled) - 1px) var(--ruled));
+}
+.rule-lines { margin: 0; line-height: var(--ruled); font-size: .95rem; }
+.rule-lines div { padding: .2rem 0 .5rem; border-bottom: 1px solid var(--rule-blue); }
+.rule-lines dt { font-size: .78rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--rule-red); }
+.rule-lines dd { margin: 0; font-family: var(--typed); color: var(--ink); overflow-wrap: anywhere; }
+.rule-card .k { color: var(--rule-red); }
+.rule-card .s { color: var(--ink); }
+.rule-card .p { color: var(--ink-soft); }
+.notes { margin: 0; display: grid; gap: 1.4rem; }
+.notes div { border-top: 1px solid rgba(255, 255, 255, .22); padding-top: 1rem; }
+.notes dt { font-family: var(--typed); font-weight: 700; color: var(--brass); }
+.notes dd { margin: .3rem 0 0; color: var(--on-cloth-soft); max-width: 34rem; }
+.rule .after { margin-top: 2rem; color: var(--on-cloth-soft); max-width: 34rem; }
+
+/* ---------- Dashboard ---------- */
+.dash-grid { display: grid; gap: clamp(2rem, 5vw, 3rem); align-items: start; }
+@media (min-width: 62rem) { .dash-grid { grid-template-columns: minmax(0, 1.35fr) minmax(0, .9fr); } }
+.shot { margin: 0; }
+.shot .frame {
+  background: var(--paper); border-radius: 8px; box-shadow: var(--card-shadow);
+  overflow: hidden; border: 1px solid var(--line);
+}
+.shot .bar {
+  display: flex; align-items: center; gap: .4rem; padding: .55rem .8rem;
+  border-bottom: 1px solid var(--line); font-family: var(--typed); font-size: .8rem; color: var(--ink-soft);
+}
+.shot .bar i { width: .6rem; height: .6rem; border-radius: 50%; background: var(--line); flex: none; }
+.shot .bar span { margin-left: .5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.shot img { width: 100%; height: auto; }
+.shot figcaption { margin-top: .75rem; font-size: .92rem; color: var(--ink-soft); }
+.tabs-list { display: grid; gap: 1.25rem; }
+.tabs-list .card { padding-bottom: 2.4rem; }
+.tabs-list .card:nth-child(odd) { transform: rotate(-.3deg); }
+.tabs-list .card:nth-child(even) { transform: rotate(.25deg); }
+.dash-row { display: grid; gap: clamp(2rem, 5vw, 3rem); margin-top: clamp(2.5rem, 6vw, 4rem); align-items: start; }
+@media (min-width: 62rem) { .dash-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.start {
+  margin-top: clamp(2.5rem, 6vw, 4rem); display: grid; gap: 1.5rem 3rem; align-items: start;
+  border-top: 1px solid var(--line); padding-top: clamp(2rem, 5vw, 3rem);
+}
+@media (min-width: 62rem) { .start { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } }
+.start > * { min-width: 0; }
+.start h3 { font-size: clamp(1.9rem, 3.5vw, 2.4rem); }
+.start pre {
+  margin: 1rem 0 0; padding: 1rem 1.15rem; border-radius: 6px; white-space: pre-wrap; overflow-wrap: anywhere;
+  background: var(--cloth-deep); color: var(--on-cloth); font-family: var(--typed); font-size: .9rem; line-height: 1.6;
+}
+.start pre .cm { color: var(--on-cloth-soft); }
+.start p { color: var(--ink-soft); margin: .8rem 0 0; }
+.start dl { margin: 0; display: grid; gap: 1.2rem; }
+.start dt { font-weight: 600; }
+.start dd { margin: .25rem 0 0; color: var(--ink-soft); }
+
+/* ---------- FAQ ---------- */
+.faq-list { display: grid; gap: .75rem; max-width: 50rem; }
+.faq-list details { background: var(--paper); border-radius: 5px; box-shadow: var(--card-shadow); }
+.faq-list summary {
+  list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  padding: 1.05rem 1.25rem; font-weight: 600; font-size: 1.05rem;
+}
+.faq-list summary::-webkit-details-marker { display: none; }
+.faq-list summary::after {
+  content: ""; flex: none; width: .65rem; height: .65rem; margin-right: .2rem;
+  border-right: 2px solid var(--rule-red); border-bottom: 2px solid var(--rule-red);
+  transform: rotate(45deg) translateY(-2px); transition: transform .3s var(--ease-out);
+}
+.faq-list details[open] summary::after { transform: rotate(225deg) translateY(-2px); }
+.faq-list details[open] summary { border-bottom: 2px solid var(--rule-red); }
+.faq-list .answer { padding: .9rem 1.25rem 1.2rem; color: var(--ink-soft); }
+.faq-list .answer p { margin: 0; max-width: 42rem; }
+.faq-list .answer p + p { margin-top: .6rem; }
+
+/* ---------- Close + footer ---------- */
+.close { text-align: center; background: var(--cloth-deep); color: var(--on-cloth); }
+.close h2 { font-size: clamp(3.2rem, 9vw, 5.5rem); }
+.close .lead { margin: 1.1rem auto 0; color: var(--on-cloth-soft); }
+.close .ctas { justify-content: center; }
+.close .button { color: var(--on-cloth); }
+.close .button:hover { background: var(--on-cloth); color: var(--cloth-deep); }
+
+footer { background: var(--cloth-deep); color: var(--on-cloth-soft); font-size: .92rem; padding: 0 0 3rem; }
+footer .wrap { display: grid; gap: 2rem; padding-top: 2.5rem; border-top: 1px solid rgba(255, 255, 255, .14); }
+@media (min-width: 52rem) { footer .wrap { grid-template-columns: 1.3fr 1fr 1fr; } }
+footer h2 { font-family: var(--text); font-size: .8rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--on-cloth); margin-bottom: .7rem; }
+footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; }
+footer a { color: var(--on-cloth-soft); }
+footer a:hover { color: var(--on-cloth); }
+footer .brand { color: var(--on-cloth); margin-bottom: .8rem; }
+footer .legal { grid-column: 1 / -1; margin: 0; font-size: .82rem; line-height: 1.55; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="HushReply home">
+      <img src="assets/logo.svg" alt="" width="34" height="34">
+      HushReply
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#features">Features</a>
+      <a href="#cost">Cost</a>
+      <a href="#compare">Compare</a>
+      <a href="#setup">Setup</a>
+<a href="#dashboard">Dashboard</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="button gh-small" href="https://github.com/lakpriya1s/hushreply">
+      <svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero cloth" aria-labelledby="hero-title">
+    <div class="wrap">
+      <div>
+        <h1 id="hero-title">The free ManyChat alternative for <span class="nw">comment-to-DM.</span></h1>
+        <p class="lead">When someone comments a word like “LINK” on your Instagram or Facebook post, HushReply sends them a private message with what they asked for. Automatically, in seconds. It can also reply under their comment and like it. No monthly fee and no contact limits.</p>
+        <div class="ctas">
+          <a class="deploy" href="https://deploy.workers.cloudflare.com/?url=https://github.com/lakpriya1s/hushreply">
+            <img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare" width="221" height="47">
+          </a>
+          <a class="button" href="https://github.com/lakpriya1s/hushreply">
+            <svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            View on GitHub
+          </a>
+        </div>
+        <p class="plaque">Public comment in · Private reply out</p>
+      </div>
+
+      <figure class="demo" role="img" aria-label="Illustration: a follower comments LINK on a post. HushReply replies under the comment, Check your DMs, and the link arrives in their direct messages, stamped Sent.">
+        <div class="phone" aria-hidden="true">
+          <div class="screen">
+            <div class="post-head"><span class="av av-y"><img src="assets/logo.svg" alt=""></span> yourbrand</div>
+            <div class="post-art"></div>
+            <p class="caption"><b>yourbrand</b> New guide is out. Comment LINK and I'll send it to you.</p>
+            <ul class="thread">
+              <li class="thread-label">Comments</li>
+              <li class="c c-1"><span class="av av-m">M</span><div><b>maya.makes</b><p>LINK 🙏</p></div></li>
+              <li class="c c-2 reply"><span class="av av-y"><img src="assets/logo.svg" alt=""></span><div><b>yourbrand</b><p>Check your DMs 📬</p></div></li>
+            </ul>
+          </div>
+          <div class="dm">
+            <div class="dm-head"><img src="assets/logo.svg" alt=""> Message from yourbrand</div>
+            <p>Hey Maya! Here's the link you asked for 👇</p>
+            <p class="link"><span>example.com/guide</span><span class="stamp">Sent</span></p>
+          </div>
+        </div>
+        <figcaption>Illustration. Names and post are made up.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="features" aria-labelledby="features-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="features-title">What it does</h2>
+        <p class="lead">Everything below is included, free, today.</p>
+      </div>
+      <div class="drawer">
+        <article class="card">
+          <h3>Keywords</h3>
+          <ul class="ruled">
+            <li>Reacts to the words you pick, like LINK, PRICE or GUIDE.</li>
+            <li>Spots the word in any language, even with emoji around it, but not inside other words.</li>
+            <li>Choose which posts and which platform each keyword works on.</li>
+            <li>Ignore comments that contain words you don't want, like “spam”.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Replies</h3>
+          <ul class="ruled">
+            <li>Sends a private message that greets the person by name.</li>
+            <li>Can reply under the comment, mixing a few versions so it never looks copy-pasted.</li>
+            <li>Can like the comment on Facebook.</li>
+            <li><strong>Honest replies:</strong> never says “check your DMs” unless the message really went out.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Accounts</h3>
+          <ul class="ruled">
+            <li>Works with Instagram business and creator accounts, and Facebook Pages.</li>
+            <li>Run every account you own from one setup.</li>
+            <li>Give each account its own keywords, or share keywords between them.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Safe by design</h3>
+          <ul class="ruled">
+            <li>Only Meta can set it off, so nobody else can send messages as you.</li>
+            <li>One message per comment, even if Meta reports the same comment twice.</li>
+            <li>Never replies to its own replies.</li>
+            <li>Won't message the same person again and again.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Easy to run</h3>
+          <ul class="ruled">
+            <li>A simple <a href="#dashboard">dashboard</a> to manage everything. No code.</li>
+            <li>Test mode shows what would be sent before anything goes out.</li>
+            <li>Keeps your Instagram connection alive by itself.</li>
+            <li>Comes with the privacy and terms pages Meta asks for.</li>
+            <li>No Meta approval process for your own accounts.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="cost" class="cost cloth" aria-labelledby="cost-title">
+    <div class="wrap">
+      <div>
+        <h2 id="cost-title">$0, really.</h2>
+        <p class="lead">HushReply is free, and it runs on Cloudflare's free plan, in an account that belongs to you.</p>
+        <ul class="cost-notes">
+          <li><strong>Only keyword comments use up the free allowance.</strong> A busy post full of other comments costs nothing.</li>
+          <li><strong>No contact limits and no per-account fees.</strong> Add every account you own.</li>
+          <li><strong>Your data stays with you.</strong> Your settings and account keys live in your own Cloudflare account, not on someone else's servers.</li>
+        </ul>
+      </div>
+      <div class="card slip">
+        <span class="rubber" aria-hidden="true"><b>Free</b><span>Open source</span></span>
+        <h3>What it costs</h3>
+        <dl>
+          <div class="row"><dt>HushReply</dt><dd>$0</dd></div>
+          <div class="row"><dt>Cloudflare free plan</dt><dd>$0</dd></div>
+          <div class="row"><dt>Keyword comments answered</dt><dd>≈ 500 / day</dd></div>
+          <div class="row"><dt>Other comments</dt><dd>free</dd></div>
+          <div class="row"><dt>Contacts</dt><dd>no limit</dd></div>
+          <div class="row"><dt>Need more? Cloudflare paid plan</dt><dd>$5 / month</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section id="compare" aria-labelledby="compare-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="compare-title">HushReply or ManyChat?</h2>
+        <p class="lead">ManyChat does a lot more. HushReply does the comment-to-DM part, free, on your own account. Here's the honest split.</p>
+      </div>
+      <div class="card register">
+        <table>
+          <caption class="vh">Feature comparison between HushReply and ManyChat</caption>
+          <thead>
+            <tr><th scope="col"><span class="vh">Feature</span></th><th scope="col">HushReply</th><th scope="col">ManyChat</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Price</th><td class="us"><span class="mark">Free</span>, on your own free Cloudflare account</td><td>Free plan, then from $14/mo; Pro from $29/mo</td></tr>
+            <tr><th scope="row">Contacts</th><td class="us"><span class="mark">No limit</span></td><td>25 active contacts on Free; 250 from $14/mo, 2,500 on Pro; price grows with contacts</td></tr>
+            <tr><th scope="row">Branding</th><td class="us"><span class="mark">None</span></td><td>“Powered by Manychat” on Free</td></tr>
+            <tr><th scope="row">Instagram comment → DM</th><td class="us"><span class="mark">Yes</span></td><td>Yes</td></tr>
+            <tr><th scope="row">Facebook comment → DM</th><td class="us"><span class="mark">Yes</span></td><td>Yes</td></tr>
+            <tr><th scope="row">Public reply to the comment</th><td class="us"><span class="mark">Yes</span>, with rotating variants</td><td>Yes</td></tr>
+            <tr><th scope="row">Multiple accounts</th><td class="us"><span class="mark">Yes</span>, every account you own, free</td><td>Yes</td></tr>
+            <tr><th scope="row">Where your data lives</th><td class="us">Your Cloudflare account</td><td>ManyChat's servers</td></tr>
+            <tr><th scope="row">Open source</th><td class="us"><span class="mark">Yes</span>, free to use and change</td><td>No</td></tr>
+            <tr><th scope="row">Visual flow builder</th><td class="us">No. Simple keyword rules, set up in a dashboard</td><td>Yes</td></tr>
+            <tr><th scope="row">Broadcasts and sequences</th><td class="us">No</td><td>Yes</td></tr>
+            <tr><th scope="row">Story replies, “follow to get the link”</th><td class="us">Not yet</td><td>Yes</td></tr>
+            <tr><th scope="row">Setup time</th><td class="us">About an hour, once, mostly in Meta's settings</td><td>Minutes</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fineprint">Prices from third-party roundups of manychat.com/pricing, October 2026, at annual-billing rates. Check their site for current pricing. Not affiliated with ManyChat or Meta.</p>
+    </div>
+  </section>
+
+  <section id="setup" aria-labelledby="setup-title" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="setup-title">Live in five steps</h2>
+        <p class="lead">No servers to look after. Most of the time goes on Meta's settings, and the <a href="https://github.com/lakpriya1s/hushreply/blob/main/docs/setup.md">setup guide</a> walks you through every screen.</p>
+      </div>
+      <ol class="steps">
+        <li><span class="spine" aria-hidden="true">1</span><h3>Create a Meta app</h3><p class="step-body">A free “app” on Meta's developer site is what allows HushReply to message people for you. <a href="https://github.com/lakpriya1s/hushreply/blob/main/docs/setup.md">The setup guide</a> shows every click.</p></li>
+        <li><span class="spine" aria-hidden="true">2</span><h3>Click Deploy to Cloudflare</h3><p class="step-body">One button makes your own copy of HushReply in your GitHub and sets it up on a free Cloudflare account. It asks for the keys from step 1, plus a verify token: any password you make up.</p></li>
+        <li><span class="spine" aria-hidden="true">3</span><h3>Connect it to Meta</h3><p class="step-body">In your Meta app's webhook settings, paste your HushReply address (it ends in <code>/webhook</code>) and the verify token you made up in step 2. Now Meta tells HushReply about new comments.</p></li>
+        <li><span class="spine" aria-hidden="true">4</span><h3>Test it</h3><p class="step-body">Comment your keyword on your own post. HushReply starts in test mode, so it shows what it would send without sending anything.</p></li>
+        <li><span class="spine" aria-hidden="true">5</span><h3>Go live</h3><p class="step-body">In your copy on GitHub, open <code>wrangler.toml</code>, change <code>DRY_RUN = "true"</code> to <code>"false"</code> and commit. HushReply updates itself within a couple of minutes.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="rules" class="rule cloth" aria-labelledby="rules-title">
+    <div class="wrap">
+      <div class="card rule-card">
+        <h3>LINK <small>example rule</small></h3>
+<dl class="rule-lines">
+          <div><dt>When someone comments</dt><dd>LINK</dd></div>
+          <div><dt>Send them a private message</dt><dd>Hey Maya! Here's the link you asked for 👇 example.com</dd></div>
+          <div><dt>Reply under their comment, one of</dt><dd>“Just sent it to your DMs 📬” · “Check your DMs 📬” · “Sent! Check your inbox 📬”</dd></div>
+        </dl>
+      </div>
+      <div>
+        <h2 id="rules-title">Every rule is a card</h2>
+        <p class="lead">A rule is three things: the word to watch for, the message to send, and what to say under the comment. This one comes with HushReply, ready to edit.</p>
+        <dl class="notes">
+          <div><dt>The word</dt><dd>Catches LINK, link and “Link 🙏”, but not “linked”.</dd></div>
+          <div><dt>The message</dt><dd>Sent privately to the person who commented, greeting them by name.</dd></div>
+          <div><dt>The reply</dt><dd>Posted under their comment. HushReply picks one of your versions each time, so replies don't look copy-pasted.</dd></div>
+        </dl>
+        <p class="after">Make your own in the <a href="#dashboard">dashboard</a>: fill in a form, try a comment, click save. Or edit <code>rules.json</code> right on GitHub's website. HushReply updates itself either way. <a href="https://github.com/lakpriya1s/hushreply/blob/main/docs/rules.md">Rule reference</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="dashboard" aria-labelledby="dashboard-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="dashboard-title">Point, click, save. No code.</h2>
+        <p class="lead">HushReply comes with a simple dashboard. Set up your keywords and messages, add your accounts and paste in your Meta keys, all in forms. Try a comment to see what would be sent, then publish with one click.</p>
+      </div>
+
+      <div class="dash-grid">
+        <figure class="shot">
+          <div class="frame">
+            <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span>HushReply dashboard · Rules</span></div>
+            <a href="assets/dashboard-rules.webp" title="Open full size"><img src="assets/dashboard-rules.webp" width="1200" height="930" loading="lazy"
+                 alt="The Rules tab: a tab per account plus Shared, and a form for the rule 'guide' with its keyword, match mode, DM text, three public reply variants and an exclude list. Save rules.json, Commit &amp; push and Deploy buttons along the bottom."></a>
+          </div>
+          <figcaption>One simple form per keyword, with a tab for each account. Example data.</figcaption>
+        </figure>
+
+        <div class="tabs-list">
+          <article class="card">
+            <h3>Rules</h3>
+            <ul class="ruled">
+              <li>The keyword, the message and the replies are simple form fields.</li>
+              <li>Add, reorder, duplicate or switch off a rule with one click.</li>
+              <li>Mistakes are highlighted, and a broken rule can't be saved.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>Accounts</h3>
+            <ul class="ruled">
+              <li>Add each Instagram account and Facebook Page you own.</li>
+              <li>Live within a minute. <strong>No redeploy.</strong></li>
+              <li>Your account keys stay hidden on screen and are never saved to a file.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>App keys</h3>
+            <ul class="ruled">
+              <li>Paste in the keys from your Meta app.</li>
+              <li>Works straight away. No digging through Cloudflare's settings.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+
+      <div class="dash-row">
+        <figure class="shot">
+          <div class="frame">
+            <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span>Test a comment</span></div>
+            <a href="assets/dashboard-test.webp" title="Open full size"><img src="assets/dashboard-test.webp" width="1008" height="522" loading="lazy"
+                 alt="The Test a comment box: the comment 'GUIDE please' on Studio Instagram matches the 'guide' rule, showing the DM that would be sent and the public reply."></a>
+          </div>
+          <figcaption>Type a comment to see exactly what HushReply would send. Nothing goes out.</figcaption>
+        </figure>
+        <figure class="shot">
+          <div class="frame">
+            <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span>HushReply dashboard · Accounts</span></div>
+            <a href="assets/dashboard-accounts.webp" title="Open full size"><img src="assets/dashboard-accounts.webp" width="1200" height="1048" loading="lazy"
+                 alt="The Accounts tab with an Instagram account and a Facebook Page, each with its id, a masked access token and a 'token set' badge, plus buttons to add accounts and save."></a>
+          </div>
+          <figcaption>All your accounts in one list, with their keys kept hidden.</figcaption>
+        </figure>
+      </div>
+
+      <div class="start">
+        <div>
+          <h3>Opening the dashboard</h3>
+          <p>It runs on your own computer. Install <a href="https://nodejs.org/">Node.js</a> (free) once, then copy and paste these lines into your computer's Terminal app, one at a time. Put your GitHub username in place of YOUR-NAME. The login line opens Cloudflare in your browser so you can sign in.</p>
+<pre><code><span class="cm"># the first time</span>
+git clone https://github.com/YOUR-NAME/hushreply
+cd hushreply
+npm install
+npx wrangler login
+
+<span class="cm"># every time after that (opens in your browser)</span>
+npm run dashboard</code></pre>
+          <p>Change a keyword, click <strong>Save</strong>, then <strong>Commit &amp; push</strong>. HushReply updates itself within a couple of minutes. <a href="https://github.com/lakpriya1s/hushreply/blob/main/docs/dashboard.md">Dashboard guide</a></p>
+        </div>
+        <dl>
+          <div><dt>Do I need it?</dt><dd>For one Instagram account and one Facebook Page it's optional: you can change keywords right on GitHub's website. For several accounts, or if you'd rather fill in forms, use the dashboard.</dd></div>
+          <div><dt>Why on my computer, not a website?</dt><dd>Your account keys travel only between your computer and your own Cloudflare account. Nothing is put online for someone to break into.</dd></div>
+          <div><dt>Does it change things straight away?</dt><dd>New accounts and keys work within a minute. Keyword changes go live when you click Commit &amp; push. A test switch lets you try everything safely first.</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" aria-labelledby="faq-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="faq-title">Questions</h2>
+      </div>
+      <div class="faq-list">
+        <details>
+          <summary>Is it really free?</summary>
+          <div class="answer"><p>Yes. HushReply is free, and it runs on Cloudflare's free plan in your own account. That's enough to answer about 500 keyword comments every day, and comments without a keyword cost nothing. If you ever need more, Cloudflare's paid plan is $5 a month.</p></div>
+        </details>
+        <details>
+          <summary>Do I need Meta to approve anything?</summary>
+          <div class="answer"><p>Not for your own accounts. Meta lets an app that only works on your own Pages and Instagram accounts skip its review process. You'd need Meta's approval to run HushReply on other people's accounts.</p></div>
+        </details>
+        <details>
+          <summary>Is this allowed by Meta?</summary>
+          <div class="answer"><p>Yes. It uses Meta's own official feature for answering a comment with a private message, the same one the big tools use. It never logs in as you and never scrapes anything. Meta's rules: one private message per comment, sent within 7 days of the comment.</p></div>
+        </details>
+        <details>
+          <summary>What does my Instagram account need?</summary>
+          <div class="answer"><p>It must be a public Business or Creator account, with “Allow access to messages” turned on in Instagram's message settings. It works on comments on your own posts.</p></div>
+        </details>
+        <details>
+          <summary>Can I run it for clients?</summary>
+          <div class="answer"><p>Not out of the box. Running it on accounts you don't own needs Meta's approval process. Each client can set up their own free copy instead.</p></div>
+        </details>
+        <details>
+          <summary>Do I need to know how to code?</summary>
+          <div class="answer"><p>No. The Deploy button asks for everything it needs, and the <a href="#dashboard">dashboard</a> turns rules, accounts and keys into forms, so you never edit a file by hand.</p><p>The dashboard runs on your computer, so you install <a href="https://nodejs.org/">Node.js</a> once and copy-paste a few commands. With one Instagram account and one Page you can skip it and edit rules in GitHub's web editor instead.</p></div>
+        </details>
+        <details>
+          <summary>Can I change it or share it?</summary>
+          <div class="answer"><p>Yes. It's open source (AGPL-3.0 license): use it, change it and run it for free. If you offer a changed version as a service to other people, you share your changes too.</p></div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="close" aria-labelledby="close-title">
+    <div class="wrap">
+      <h2 id="close-title">Say the word. They get the DM.</h2>
+      <p class="lead">Free and open source, running on your own Cloudflare account.</p>
+      <div class="ctas">
+        <a class="deploy" href="https://deploy.workers.cloudflare.com/?url=https://github.com/lakpriya1s/hushreply">
+          <img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare" width="221" height="47" loading="lazy">
+        </a>
+        <a class="button" href="https://github.com/lakpriya1s/hushreply/blob/main/docs/setup.md">Read the setup guide</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <a class="brand" href="./"><img src="assets/logo.svg" alt="" width="34" height="34">HushReply</a>
+      <p style="margin:0;max-width:24rem">Public comment in, private reply out. Comment-to-DM automation for your own Instagram and Facebook accounts.</p>
+    </div>
+    <div>
+      <h2>Project</h2>
+      <ul>
+        <li><a href="https://github.com/lakpriya1s/hushreply">GitHub</a></li>
+        <li><a href="https://github.com/lakpriya1s/hushreply/issues">Report an issue</a></li>
+        <li><a href="https://github.com/lakpriya1s/hushreply/blob/main/LICENSE">License (AGPL-3.0)</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Docs</h2>
+      <ul>
+        <li><a href="https://github.com/lakpriya1s/hushreply/blob/main/docs/setup.md">Setup guide</a></li>
+        <li><a href="https://github.com/lakpriya1s/hushreply/blob/main/docs/rules.md">Rules</a></li>
+        <li><a href="https://github.com/lakpriya1s/hushreply/blob/main/docs/dashboard.md">Dashboard</a></li>
+        <li><a href="https://github.com/lakpriya1s/hushreply/blob/main/docs/troubleshooting.md">Troubleshooting</a></li>
+      </ul>
+    </div>
+    <p class="legal">Not affiliated with Meta Platforms or ManyChat. Instagram and Facebook are trademarks of Meta Platforms, Inc.</p>
+  </div>
+</footer>
+</body>
+</html>

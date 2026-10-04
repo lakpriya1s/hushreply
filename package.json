@@ -1,0 +1,107 @@
+{
+  "name": "hushreply",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Free, open-source ManyChat alternative: auto-DM anyone who comments a keyword on your Instagram or Facebook posts. Self-hosted on Cloudflare Workers' free tier.",
+  "license": "AGPL-3.0-only",
+  "homepage": "https://lakpriya1s.github.io/hushreply/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lakpriya1s/hushreply.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lakpriya1s/hushreply/issues"
+  },
+  "keywords": [
+    "manychat-alternative",
+    "manychat",
+    "instagram",
+    "instagram-automation",
+    "instagram-dm",
+    "facebook",
+    "comment-to-dm",
+    "auto-dm",
+    "auto-reply",
+    "dm-automation",
+    "private-replies",
+    "chatbot",
+    "cloudflare-workers",
+    "meta-graph-api",
+    "self-hosted",
+    "open-source"
+  ],
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "dashboard": "node dashboard/server.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail --format pretty",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test test/*.test.ts"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260801.1",
+    "typescript": "^5.7.0",
+    "wrangler": "^4.120.0"
+  },
+  "cloudflare": {
+    "label": "HushReply",
+    "products": [
+      "Workers",
+      "KV"
+    ],
+    "bindings": {
+      "STATE": {
+        "description": "Stores dedupe claims, per-person cooldowns and refreshed Instagram tokens. Created for you; the default name is fine."
+      },
+      "META_APP_SECRET": {
+        "description": "Your Meta app's secret: [developers.facebook.com/apps](https://developers.facebook.com/apps) → your app → **App settings → Basic → App secret**."
+      },
+      "IG_APP_SECRET": {
+        "description": "The **Instagram** app secret, a different value from the one above: your app → **Instagram → API setup with Instagram login**. Instagram webhooks are signed with it. Leave blank if you only use Facebook."
+      },
+      "VERIFY_TOKEN": {
+        "description": "Any random string, e.g. from `openssl rand -hex 16`. You paste the same value into Meta's webhook settings."
+      },
+      "IG_USER_ID": {
+        "description": "Optional. Your Instagram professional account id (digits only). Leave blank to skip Instagram."
+      },
+      "IG_ACCESS_TOKEN": {
+        "description": "Optional. The Instagram access token generated on the same **API setup with Instagram login** page. Refreshed daily by the Worker."
+      },
+      "FB_PAGE_ID": {
+        "description": "Optional. Your Facebook Page id (digits only). Leave blank to skip Facebook."
+      },
+      "FB_PAGE_TOKEN": {
+        "description": "Optional. A never-expiring Page access token. See the [setup guide](https://github.com/lakpriya1s/hushreply/blob/main/docs/setup.md#facebook-page-token)."
+      },
+      "DRY_RUN": {
+        "description": "Keep `true` until a test comment shows a match in the logs. Then set it to `false` in `wrangler.toml` and commit to start sending."
+      },
+      "CONTACT_EMAIL": {
+        "description": "Shown on the `/privacy`, `/terms` and `/data-deletion` pages Meta asks for. Use a real inbox."
+      },
+      "APP_NAME": {
+        "description": "Your app or brand name, shown on the legal pages."
+      },
+      "LEGAL_NAME": {
+        "description": "Optional. The person or company legally responsible, if different from the app name."
+      },
+      "IG_LOGIN_MODE": {
+        "description": "`instagram` (Instagram Login, the default) or `facebook` (Instagram via a Facebook Page)."
+      },
+      "GRAPH_VERSION": {
+        "description": "Meta Graph API version. Leave as is."
+      },
+      "DISABLE_SELF_COMMENT_GUARD": {
+        "description": "Testing only. Keep `false`."
+      },
+      "DISABLE_COOLDOWN": {
+        "description": "Testing only. Keep `false`."
+      }
+    }
+  }
+}
