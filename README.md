@@ -1,9 +1,6 @@
 <div align="center">
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./site/assets/hushreply-logo-dark.png">
-  <img src="./site/assets/hushreply-logo-light.png" alt="HushReply — free, open-source comment-to-DM automation" width="420">
-</picture>
+<img src="./site/assets/hushreply-logo.png" alt="HushReply — free, open-source comment-to-DM automation" width="420">
 
 **The free, open-source ManyChat alternative for comment-to-DM**<br>
 Someone comments a keyword on your Instagram or Facebook post — they get a DM automatically.
